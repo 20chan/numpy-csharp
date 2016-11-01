@@ -7,15 +7,31 @@ namespace ArrayManager
 {
     public static class ArrayEngine
     {
+        public static T[][] ReshapeJagged<T>(this IEnumerable<T> ary, int width, int height)
+        {
+            T[][] result = new T[width][];
+            for (int i = 0; i < width; i++)
+                result[i] = new T[height];
+
+            var trash = ary.Select((e, i) =>
+            {
+                result[i % width][i / height] = ary.ElementAt(i);
+                return e;
+            });
+            trash.ToArray();
+            return result;
+        }
+
         public static T[,] Reshape<T>(this IEnumerable<T> ary, int width, int height)
         {
             T[,] result = new T[width, height];
 
-            for(int i = 0; i < width; i++)
-                for(int j = 0; j < height; j++)
-                {
-                    result[i, j] = ary.ElementAt(i * width + j);
-                }
+            ary.Select((e, i) =>
+            {
+                if (!(ary.Count() <= i))
+                    result[i % width, i / height] = ary.ElementAt(i);
+                return e;
+            });
             return result;
         }
 

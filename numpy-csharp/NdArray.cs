@@ -4,42 +4,75 @@ using System.Linq;
 
 namespace philly.numpy
 {
-    public class NdArray<T>
+    public class NdArray<T> : IEnumerable<T>, ICloneable
     {
-        private List<ArrayList<T>> _list = new List<ArrayList<T>>();
-    }
+        public int Dimension { get { return _array.Rank; } }
 
-    internal class ArrayList<T>
-    {
-        private List<ArrayList<T>> _list;
-
-        protected ArrayList()
+        public int[] Shape
         {
-            _list = new List<ArrayList<T>>();
-        }
-
-        public ArrayList(Array array) : this()
-        {
-            if(array.Rank >= 1)
+            get
             {
-                for (int i = 0; i < array.GetLength(1); i++)
-                {
-                    Array ary = (Array)array.GetValue(i);
-                    _list.Add(new ArrayList<T>(array));
-                }
-            }
-            else
-            {
-
+                var res = new int[_array.Rank];
+                for (int i = 0; i < _array.Rank; i++)
+                    res[i] = _array.GetLength(i);
+                return res;
             }
         }
-    }
 
-    internal class ElementList<T> : ArrayList<T>
-    {
-        public ElementList(Array array) : base()
+        private Array _array;
+        public NdArray(Array array)
         {
+            _array = array;
+        }
 
+        public object Clone()
+        {
+            return new NdArray<T>(_array);
+        }
+
+        public override string ToString()
+        {
+            for(int r = 0; r < _array.Rank; r++)
+            {
+                //_array.get
+            }
+            throw new NotImplementedException();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return _array.GetEnumerator();
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            var enumerator = _array.GetEnumerator();
+
+            while (enumerator.MoveNext())
+            {
+                yield return (T)Convert.ChangeType(enumerator.Current, typeof(T));
+            }
+        }
+
+        public void Fill(T value)
+        {
+            for (int i = 0; i < _array.Length; i++)
+                _array.SetValue(value, i);
+        }
+
+        public static NdArray<T> Full(int width, int height, T value)
+        {
+            return new NdArray<T>(Enumerable.Repeat(Enumerable.Repeat(value, width), height).ToArray());
+        }
+
+        public static NdArray<T> Zeroes(int width, int height)
+        {
+            return Full(width, height, (T)Convert.ChangeType(0, typeof(T)));
+        }
+
+        public static NdArray<T> Ones(int width, int height)
+        {
+            return Full(width, height, (T)Convert.ChangeType(1, typeof(T)));
         }
     }
 }

@@ -12,8 +12,8 @@ namespace philly.numpy
         {
             get
             {
-                var res = new int[_array.Rank];
-                for (int i = 0; i < _array.Rank; i++)
+                var res = new int[_array.Rank + 1];
+                for (int i = 0; i < _array.Rank + 1; i++)
                     res[i] = _array.GetLength(i);
                 return res;
             }

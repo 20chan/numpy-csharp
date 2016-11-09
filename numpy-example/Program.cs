@@ -9,6 +9,9 @@ namespace philly.numpy_example
         static void Main(string[] args)
         {
             var ze = NdArray<int>.Zeroes(10, 3);
+            Console.WriteLine("Shape : " + string.Join(", ", ze.Shape));
+
+            Console.ReadLine();
         }
     }
 }
